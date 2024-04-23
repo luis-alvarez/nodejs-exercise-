@@ -1,0 +1,44 @@
+#!/bin/bash
+
+echo
+echo "Do you want to build the exercise Docker environment? (no/yes)"
+read answer
+echo
+case ${answer} in
+  [yY] | [yY][Ee][Ss] )
+    echo "Building your exercise environment"
+    echo
+    ;;
+  *)
+    echo "Prevent from building your exercise environment"
+    echo
+    exit
+    ;;
+esac
+echo "----------------------------------"
+
+docker="$(which docker)"
+compose="$(which docker-compose)"
+
+# Stop running containers if any
+running_containers=$(${docker} ps -q)
+if [[ $running_containers ]]
+then
+  echo "Stopping running containers"
+  ${docker} stop $running_containers
+  echo "Done"
+  echo ""
+fi
+
+# Build exercise docker image
+${docker} build -f Dockerfile.dev --no-cache -t nodejs-exercise:develop .
+
+# Start db service
+${compose} up db -d
+
+echo "----------------------------------"
+echo ""
+echo "Ready to start the exercise."
+echo "Run db-setup to set up the database."
+echo "Then run make terminal, install the dependencies and run npm test to run the tests"
+echo ""

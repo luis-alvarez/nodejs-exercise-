@@ -1,0 +1,19 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Attach to Mocha in Docker",
+			"type": "node",
+			"request": "attach",
+			"port": 5858,
+			"address": "localhost",
+			"restart": true,
+			"sourceMaps": false,
+			"localRoot": "${workspaceFolder}/",
+			"remoteRoot": "/nodejs-exercise",
+			"skipFiles": [
+				"<node_internals>/**"
+			]
+		}
+	]
+}

@@ -1,0 +1,30 @@
+.ONESHELL:
+SHELL             = /bin/bash
+
+compose           = $(shell which docker-compose)
+docker            = $(shell which docker)
+current_directory = $(shell pwd)
+
+.PHONY: build
+## Build development docker image
+build:
+	script/build
+
+.PHONY: terminal
+## Login to terminal
+terminal:
+	$(compose) run --rm terminal
+
+## Set up db
+db-setup:
+	$(compose) run --rm terminal npx prisma db push
+
+.PHONY: start
+## Start app and shared services in Docker
+start:
+	$(compose) up -d
+
+.PHONY: stop
+## Stop app and shared services in Docker
+stop:
+	$(compose) stop

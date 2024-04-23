@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:14
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: node_js_exercise_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    platform: linux/amd64
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+
+  terminal:
+    command: /bin/bash -c "npx prisma generate && /bin/bash"
+    depends_on: [db]
+    image: nodejs-exercise:develop
+    profiles: ["terminal"] # We don't want it to automatically start with "docker-compose up"
+    volumes:
+      - .:/nodejs-exercise
+      - /nodejs-exercise/node_modules
+
+  vscodemocha:
+    container_name: vscodemocha
+    depends_on: [db]
+    image: nodejs-exercise:develop
+    command: /bin/bash -c "npx prisma generate && npx mocha --inspect-brk=0.0.0.0:5858 test/**/*.test.js"
+    ports:
+      - 5858:5858
+    volumes:
+      - .:/nodejs-exercise
+      - /nodejs-exercise/node_modules
+
+volumes:
+  postgresql-data:

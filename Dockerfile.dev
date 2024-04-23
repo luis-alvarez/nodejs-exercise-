@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+
+# Use the official Node.js 20 image as a base
+FROM node:20-bullseye-slim
+
+# Expose port for debugging porpouses
+EXPOSE 5858
+
+# Home directory
+ENV APP_HOME=/nodejs-exercise
+WORKDIR $APP_HOME
+
+# Image metadata
+LABEL mantainer="info@razortech.com.ar"
+LABEL version="1.0"
+LABEL description="This image contains Node.js v20 and the necessary dependencies \
+to solve the exercise."
+
+# Use changes to package.json to force Docker not to use the cache
+# when we change our application's nodejs dependencies:
+RUN mkdir tmp
+ADD package.json tmp/package.json
+ADD package-lock.json tmp/package-lock.json
+RUN cd tmp && npm install --verbose
+RUN cp -a tmp/node_modules ./
+
+# From here we load our application's code in, therefore the previous docker
+# "layer" thats been cached will be used if possible
+COPY . ./
